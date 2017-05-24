@@ -20,6 +20,7 @@ import json
 import logging
 import uuid
 import time
+import socket
 
 from datetime import datetime
 
@@ -33,7 +34,6 @@ from conpot.core.loggers.syslog import SysLogger
 from conpot.core.loggers.taxii_log import TaxiiLogger
 from conpot.core.loggers.json_log import JsonLogger
 from helpers import json_default
-
 logger = logging.getLogger(__name__)
 
 

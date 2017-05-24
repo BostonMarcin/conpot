@@ -19,17 +19,29 @@ from logging.handlers import SysLogHandler
 import logging
 import socket
 
+from filters import AppFilter
+
 
 class SysLogger(object):
     def __init__(self, host, port, facility, logdevice, logsocket):
+
         logger = logging.getLogger()
+        app_filter = AppFilter()
+        log_format = AppFilter().logformat()
+        formatter = logging.Formatter(log_format)
 
         if str(logsocket).lower() == 'udp':
-            logger.addHandler(SysLogHandler(address=(host, port),
-                                            facility=getattr(SysLogHandler, 'LOG_' + str(facility).upper()),
-                                            socktype=socket.SOCK_DGRAM))
+
+            handler = SysLogHandler(address=(host, port),
+                                    facility=getattr(SysLogHandler, 'LOG_' + str(facility).upper()),
+                                    socktype=socket.SOCK_DGRAM)
+
         elif str(logsocket).lower() == 'dev':
-            logger.addHandler(SysLogHandler(logdevice))
+            handler = SysLogHandler(logdevice)
+
+        handler.addFilter(app_filter)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
     def log(self, data):
         # stub function since the additional handler has been added to the root loggers instance.
