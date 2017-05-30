@@ -1,7 +1,8 @@
 import socket, logging
 
 VARS = {'client_ip':('addr',
-                         'sockaddr',
+                    'sockaddr',
+                     'address',
                          ),
             'source':socket.gethostname(),
             }
