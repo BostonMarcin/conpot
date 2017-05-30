@@ -9,4 +9,6 @@ def extra(_locals, *args, **kwargs):
     for _ in VARS['client_ip']:
         if _ in _locals: return _locals[_]
 
+    return 'Undefined'
+
 
