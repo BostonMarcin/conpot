@@ -84,7 +84,7 @@ def setup_logging(log_file, verbose):
         log_level = logging.INFO
 
     format_VAR = " ".join("{n} %({n})s".format(n = v) for v in VARS.keys())
-    log_format = logging.Formatter('%(asctime)-15s ' + format_VAR + ' message %(message)s')
+    log_format = logging.Formatter('%(asctime)-15s ' + format_VAR + ' shortmessage %(message)s')
     console_log = logging.StreamHandler()
     console_log.setLevel(log_level)
     console_log.setFormatter(log_format)

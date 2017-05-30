@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from logging.handlers import SysLogHandler
-import logging; from conpot.core.loggers.utils import create_extra
+import logging; from conpot.core.loggers.utils import create_extra, VARS
 import socket
 
 # from utils import AppFilter
@@ -26,6 +26,8 @@ class SysLogger(object):
     def __init__(self, host, port, facility, logdevice, logsocket):
 
         logger = logging.getLogger()
+        format_VAR = " ".join("{n} %({n})s".format(n=v) for v in VARS.keys())
+        log_format = logging.Formatter('%(asctime)-15s ' + format_VAR + ' message %(message)s')
         # app_filter = AppFilter()
         # log_format = AppFilter().logformat()
         # formatter = logging.Formatter(log_format)
@@ -40,7 +42,7 @@ class SysLogger(object):
             handler = SysLogHandler(logdevice)
 
         # handler.addFilter(app_filter)
-        # handler.setFormatter(formatter)
+        handler.setFormatter(log_format)
         logger.addHandler(handler)
 
     def log(self, data):

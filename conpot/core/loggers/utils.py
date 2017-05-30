@@ -3,14 +3,14 @@ import socket, logging
 VARS = {'client_ip':('addr',
                          'sockaddr',
                          ),
-            'hostname':socket.gethostname(),
+            'source':socket.gethostname(),
             }
 
 
 def create_extra(_locals, *args, **kwargs):
 
     _extra = {}
-    _extra['hostname'] =  VARS['hostname']
+    _extra['source'] =  VARS['source']
 
     #build extra for client's address
     _extra['client_ip'] = "Undefined"
