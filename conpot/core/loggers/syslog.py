@@ -19,16 +19,16 @@ from logging.handlers import SysLogHandler
 import logging; from conpot.core.loggers.utils import create_extra
 import socket
 
-from filters import AppFilter
+# from utils import AppFilter
 
 
 class SysLogger(object):
     def __init__(self, host, port, facility, logdevice, logsocket):
 
         logger = logging.getLogger()
-        app_filter = AppFilter()
-        log_format = AppFilter().logformat()
-        formatter = logging.Formatter(log_format)
+        # app_filter = AppFilter()
+        # log_format = AppFilter().logformat()
+        # formatter = logging.Formatter(log_format)
 
         if str(logsocket).lower() == 'udp':
 
@@ -39,8 +39,8 @@ class SysLogger(object):
         elif str(logsocket).lower() == 'dev':
             handler = SysLogHandler(logdevice)
 
-        handler.addFilter(app_filter)
-        handler.setFormatter(formatter)
+        # handler.addFilter(app_filter)
+        # handler.setFormatter(formatter)
         logger.addHandler(handler)
 
     def log(self, data):

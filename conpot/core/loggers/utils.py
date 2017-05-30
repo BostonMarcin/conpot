@@ -1,4 +1,4 @@
-import socket
+import socket, logging
 
 VARS = {'client_ip':('addr',
                          'sockaddr',
@@ -24,3 +24,12 @@ def create_extra(_locals, *args, **kwargs):
 
 
 
+class AppFilter(logging.Filter):
+
+    def filter(self, record):
+        record.host_name = socket.gethostname()
+        return True
+
+    def logformat(self):
+
+        return '%(host_name)s   tools_class   honeypot_scada  message %(message)s'
