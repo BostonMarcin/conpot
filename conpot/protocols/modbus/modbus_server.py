@@ -128,16 +128,16 @@ class ModbusServer(modbus.Server):
                         time.sleep(self.delay / 1000)
                         logger.debug(
                             'Modbus server\'s turnaround delay expired.')
-                        logger.info('Modbus connection terminated with client %s.',
-                                    address[0])
+                        logging.info('Modbus connection terminated with client %s.',
+                                    address[0],extra = create_extra(_locals = locals()))
                         session.add_event({'type': 'CONNECTION_TERMINATED'})
                         sock.shutdown(socket.SHUT_RDWR)
                         sock.close()
                         break
                     # Invalid addressing
                     else:
-                        logger.info('Modbus client ignored due to invalid addressing.'
-                                    ' (%s)', session.id)
+                        logging.info('Modbus client ignored due to invalid addressing.'
+                                    ' (%s)', session.id,extra = create_extra(_locals = locals()))
                         session.add_event({'type': 'CONNECTION_TERMINATED'})
                         sock.shutdown(socket.SHUT_RDWR)
                         sock.close()

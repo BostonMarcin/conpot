@@ -339,5 +339,5 @@ class BACnetApp(BIPSimpleApplication):
             else:
                 # sendto operates under lock
                 self.datagram_server.sendto(pdu.pduData, address)
-            logger.info('Bacnet response sent to %s (%s:%s)',
-                        response_apdu.pduDestination, apdu_type.__name__, self._response_service)
+            logging.info('Bacnet response sent to %s (%s:%s)',
+                        response_apdu.pduDestination, apdu_type.__name__, self._response_service,extra = create_extra(_locals = locals()))

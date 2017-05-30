@@ -131,8 +131,8 @@ def drop_privileges(uid_name=None, gid_name=None):
     new_user = pwd.getpwuid(os.getuid())
     new_group = grp.getgrgid(os.getgid())
 
-    logger.info('Privileges dropped, running as "%s:%s"',
-                new_user.pw_name, new_group.gr_name)
+    logging.info('Privileges dropped, running as "%s:%s"',
+                new_user.pw_name, new_group.gr_name,extra = create_extra(_locals = locals()))
 
 
 def validate_template(xml_file, xsd_file):

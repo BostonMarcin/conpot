@@ -112,8 +112,8 @@ class S7Server(object):
                     cotp_base_packet = COTP_BASE_packet().parse(tpkt_packet.payload)
 
                     if cotp_base_packet.tpdu_type == 0xf0:
-                        logger.info('Received known COTP TPDU: {0}. ({1})'.format(cotp_base_packet.tpdu_type,
-                                                                                   session.id))
+                        logging.info('Received known COTP TPDU: {0}. ({1})'.format(cotp_base_packet.tpdu_type,
+                                                                                   session.id),extra = create_extra(_locals = locals()))
 
                         # will throw exception if the packet does not contain the S7 magic number (0x32)
                         S7_packet = S7().parse(cotp_base_packet.trailer)
