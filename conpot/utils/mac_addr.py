@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import subprocess
 
 logger = logging.getLogger(__name__)
@@ -56,12 +56,12 @@ def change_mac(iface=None, mac=None, config=None, revert=None):
 
     if _check_mac(iface, mac):
         if revert:
-            logger.info('MAC address reverted for interface %s', iface)
+            logger.info('MAC address reverted for interface %s', iface,extra = create_extra(_locals = locals()))
         else:
-            logger.info('MAC address of interface %s changed %s', iface, mac)
+            logger.info('MAC address of interface %s changed %s', iface, mac,extra = create_extra(_locals = locals()))
         if _is_dhcp(iface):
             _renew_lease(iface)
-            logger.info('Interface has a DHCP lease, refreshed.')
+            logger.info('Interface has a DHCP lease, refreshed.',extra = create_extra(_locals = locals()))
     else:
         logger.warning('Could not change MAC address.')
 

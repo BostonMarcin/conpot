@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import time
 import random
 
@@ -48,10 +48,10 @@ class HTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
                     'dst_port': self.server.server_port,
                     'data': {0: {'request': '{0} {1}: {2}'.format(version, request_type, request)}}}
 
-        logger.info('%s %s request from %s: %s. %s', version, request_type, addr, request, session.id)
+        logger.info('%s %s request from %s: %s. %s', version, request_type, addr, request, session.id,extra = create_extra(_locals = locals()))
 
         if response:
-            logger.info('%s response to %s: %s. %s', version, addr, response, session.id)
+            logger.info('%s response to %s: %s. %s', version, addr, response, session.id,extra = create_extra(_locals = locals()))
             log_dict['data'][0]['response'] = '{0} response: {1}'.format(version, response)
             session.add_event({'request': str(request), 'response': str(response)})
         else:
@@ -529,7 +529,7 @@ class HTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
             requeststring = ''
             self.path = None
             if message is not None:
-                logger.info(message)
+                logger.info(message,extra = create_extra(_locals = locals()))
 
         # generate the appropriate status code, header and payload
         (status, headers, trailers, payload, chunks) = self.load_status(code,
@@ -1106,5 +1106,5 @@ class CommandResponder(object):
         self.httpd.serve_forever()
 
     def stop(self):
-        logging.info("HTTP server will shut down gracefully as soon as all connections are closed.")
+        logging.info("HTTP server will shut down gracefully as soon as all connections are closed.",extra = create_extra(_locals = locals()))
         self.httpd.shutdown()

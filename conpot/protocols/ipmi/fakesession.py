@@ -19,7 +19,7 @@
 import struct
 import os
 import socket
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 import pyghmi.exceptions as exc
 import pyghmi.ipmi.private.constants as constants
@@ -61,7 +61,7 @@ class FakeSession(Session):
         self.server = None
         self.sol_handler = None
         self.ipmicallback = self._generic_callback
-        logger.info('New IPMI session initialized for client (%s)', self.sockaddr)
+        logger.info('New IPMI session initialized for client (%s)', self.sockaddr,extra = create_extra(_locals = locals()))
 
     def _generic_callback(self, response):
         self.lastresponse = response
@@ -349,7 +349,7 @@ class FakeSession(Session):
             self.waiting_sessions[self]['timeout'] = self.timeout + _monotonic_time()
 
     def send_data(self, packet, address):
-        logger.info('IPMI response sent to %s', address)
+        logger.info('IPMI response sent to %s', address,extra = create_extra(_locals = locals()))
         self.socket.sendto(packet, address)
 
 

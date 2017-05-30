@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import binascii
 
 import crc16
@@ -37,7 +37,7 @@ class KamstrupRequestBase(KamstrupProtocolBase):
         super(KamstrupRequestBase, self).__init__(communication_address)
         self.command = command
         self.message_bytes = message_bytes
-        logger.info('Kamstrup request package created with bytes: %s', self.message_bytes)
+        logger.info('Kamstrup request package created with bytes: %s', self.message_bytes,extra = create_extra(_locals = locals()))
 
     def __str__(self):
         return 'Comm address: {0}, Command: {1}, Message: {2}'.format(hex(self.communication_address),

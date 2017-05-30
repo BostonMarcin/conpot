@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import json
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import socket
 
 import requests
@@ -58,7 +58,7 @@ def get_ext_ip(config=None, urls=None):
         urls = json.loads(config.get('fetch_public_ip', 'urls'))
     public_ip = _fetch_data(urls)
     if public_ip:
-        logger.info('Fetched %s as external ip.', public_ip)
+        logger.info('Fetched %s as external ip.', public_ip,extra = create_extra(_locals = locals()))
     else:
         logger.warning('Could not fetch public ip: %s', public_ip)
     return public_ip

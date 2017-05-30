@@ -20,7 +20,7 @@ import gevent.monkey
 
 gevent.monkey.patch_all()
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import os
 import argparse
 import sys
@@ -83,7 +83,7 @@ def setup_logging(log_file, verbose):
     else:
         log_level = logging.INFO
 
-    format_VAR = " ".join("%({s})".format(s = v) for v in VARS.keys())
+    format_VAR = " ".join("{s} %({s})".format(s = v) for v in VARS.keys())
     log_format = logging.Formatter('%(asctime)-15s' + format_VAR + '%(message)s')
     console_log = logging.StreamHandler()
     console_log.setLevel(log_level)
@@ -183,7 +183,7 @@ def main():
     config = ConfigParser()
     if not os.path.isfile(args.config):
         args.config = os.path.join(package_directory, 'conpot.cfg')
-        logger.info('No conpot.cfg found in current directory, using default configuration: %s', args.config)
+        logger.info('No conpot.cfg found in current directory, using default configuration: %s', args.config,extra = create_extra(_locals = locals()))
     config.read(args.config)
 
     # No template specified
@@ -244,8 +244,8 @@ def main():
         logger.error('Config not found: %s', args.config)
         sys.exit(1)
 
-    logger.info('Starting Conpot using template: %s', root_template_directory)
-    logger.info('Starting Conpot using configuration found in: %s', args.config)
+    logger.info('Starting Conpot using template: %s', root_template_directory,extra = create_extra(_locals = locals()))
+    logger.info('Starting Conpot using configuration found in: %s', args.config,extra = create_extra(_locals = locals()))
 
     servers = list()
 
@@ -298,9 +298,9 @@ def main():
                         greenlet = gevent.spawn(server.start, host, port)
                         greenlet.link_exception(on_unhandled_greenlet_exception)
                         servers.append(server)
-                        logger.info('Found and enabled %s protocol.', protocol)
+                        logger.info('Found and enabled %s protocol.', protocol,extra = create_extra(_locals = locals()))
                 else:
-                    logger.info('%s available but disabled by configuration.', protocol_name)
+                    logger.info('%s available but disabled by configuration.', protocol_name,extra = create_extra(_locals = locals()))
             else:
                 logger.debug('No %s template found. Service will remain unconfigured/stopped.', protocol_name)
 
@@ -346,9 +346,9 @@ def main():
                         proxy_greenlet = gevent.spawn(proxy_server.start)
                         proxy_greenlet.link_exception(on_unhandled_greenlet_exception)
                 else:
-                    logger.info('Proxy available but disabled by template.')
+                    logger.info('Proxy available but disabled by template.',extra = create_extra(_locals = locals()))
         else:
-            logger.info('No proxy template found. Service will remain unconfigured/stopped.')
+            logger.info('No proxy template found. Service will remain unconfigured/stopped.',extra = create_extra(_locals = locals()))
         # Wait for the services to bind ports before forking
         gevent.sleep(5)
         # Only drop if running as root
@@ -371,11 +371,11 @@ def main():
                 if len(servers) > 0:
                     gevent.wait()
             except KeyboardInterrupt:
-                logging.info('Stopping Conpot')
+                logging.info('Stopping Conpot',extra = create_extra(_locals = locals()))
                 for server in servers:
                     server.stop()
         else:
-            logging.info('Conpot has to be executed as root.')
+            logging.info('Conpot has to be executed as root.',extra = create_extra(_locals = locals()))
 
     else:
         # wait for the child to end

@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import tempfile
 import shutil
 import os
@@ -181,7 +181,7 @@ class SNMPServer(object):
         self.xml_general_config(self.dom)
         self.xml_mib_config(self.dom, self.compiled_mibs, self.raw_mibs)
 
-        logger.info('SNMP server started on: %s', (host, self.get_port()))
+        logger.info('SNMP server started on: %s', (host, self.get_port()),extra = create_extra(_locals = locals()))
         self.cmd_responder.serve_forever()
 
     def stop(self):

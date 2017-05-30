@@ -1,5 +1,5 @@
 import struct
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 from modbus_tk.modbus import Slave, ModbusError, ModbusInvalidRequestError, InvalidArgumentError, DuplicatedKeyError,\
                              InvalidModbusBlockError, OverlapModbusBlockError
@@ -86,7 +86,7 @@ class MBSlave(Slave):
                 if response_pdu:
                     if broadcast:
                         # not really sure whats going on here - better log it!
-                        logger.info("Modbus broadcast: %s" % (utils.get_log_buffer("!!", response_pdu)))
+                        logger.info("Modbus broadcast: %s" % (utils.get_log_buffer("!!", response_pdu)),extra = create_extra(_locals = locals()))
                         return ""
                     else:
                         return struct.pack(">B", self.function_code) + response_pdu

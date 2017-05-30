@@ -18,7 +18,7 @@
 
 import MySQLdb
 import gevent
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 from warnings import filterwarnings
 filterwarnings('ignore', category=MySQLdb.Warning)

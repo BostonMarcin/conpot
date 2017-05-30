@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 logger = logging.getLogger(__name__)
 

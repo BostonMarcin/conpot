@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 import crc16
 import kamstrup_constants
@@ -74,7 +74,7 @@ class Decoder382(object):
         for d in data:
             d = ord(d)
             if not self.in_parsing and d != kamstrup_constants.REQUEST_MAGIC:
-                logger.info('No kamstrup_meter request magic received, got: %s', d.encode('hex-codec'))
+                logger.info('No kamstrup_meter request magic received, got: %s', d.encode('hex-codec'),extra = create_extra(_locals = locals()))
             else:
                 self.in_parsing = True
 
@@ -112,7 +112,7 @@ class Decoder382(object):
         for d in data:
             d = ord(d)
             if not self.out_parsing and d != kamstrup_constants.RESPONSE_MAGIC:
-                logger.info('Kamstrup: Expected response magic but got got: %s', d.encode('hex-codec'))
+                logger.info('Kamstrup: Expected response magic but got got: %s', d.encode('hex-codec'),extra = create_extra(_locals = locals()))
             else:
                 self.out_parsing = True
 

@@ -7,7 +7,7 @@ VARS = {'client_ip':('addr',
             }
 
 
-def extra(_locals, *args, **kwargs):
+def create_extra(_locals, *args, **kwargs):
 
     _extra = {}
     _extra['hostname'] =  VARS['hostname']

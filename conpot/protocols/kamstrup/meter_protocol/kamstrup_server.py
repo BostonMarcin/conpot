@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import socket
 import binascii
 import random
@@ -37,22 +37,22 @@ class KamstrupServer(object):
         self.server_active = True
         self.server = None
         conpot_core.get_databus().observe_value('reboot_signal', self.reboot)
-        logger.info('Kamstrup protocol server initialized.')
+        logger.info('Kamstrup protocol server initialized.',extra = create_extra(_locals = locals()))
 
     # pretending reboot... really just closing connecting while "rebooting"
     def reboot(self, key):
         assert (key == 'reboot_signal')
         self.server_active = False
-        logger.info('Pretending server reboot')
+        logger.info('Pretending server reboot',extra = create_extra(_locals = locals()))
         gevent.spawn_later(2, self.set_reboot_done)
 
     def set_reboot_done(self):
-        logger.info('Stopped pretending reboot')
+        logger.info('Stopped pretending reboot',extra = create_extra(_locals = locals()))
         self.server_active = True
 
     def handle(self, sock, address):
         session = conpot_core.get_session('kamstrup_protocol', address[0], address[1])
-        logger.info('New Kamstrup connection from %s:%s. (%s)', address[0], address[1], session.id)
+        logger.info('New Kamstrup connection from %s:%s. (%s)', address[0], address[1], session.id,extra = create_extra(_locals = locals()))
         session.add_event({'type': 'NEW_CONNECTION'})
 
         self.server_active = True
@@ -63,7 +63,7 @@ class KamstrupServer(object):
                 raw_request = sock.recv(1024)
 
                 if not raw_request:
-                    logger.info('Kamstrup client disconnected. (%s)', session.id)
+                    logger.info('Kamstrup client disconnected. (%s)', session.id,extra = create_extra(_locals = locals()))
                     session.add_event({'type': 'CONNECTION_LOST'})
                     break
 
@@ -83,7 +83,7 @@ class KamstrupServer(object):
                         if response:
                             serialized_response = response.serialize()
                             logdata['response'] = binascii.hexlify(serialized_response)
-                            logger.info('Kamstrup traffic from %s: %s (%s)', address[0], logdata, session.id)
+                            logger.info('Kamstrup traffic from %s: %s (%s)', address[0], logdata, session.id,extra = create_extra(_locals = locals()))
                             sock.send(serialized_response)
                             session.add_event(logdata)
                         else:
@@ -99,7 +99,7 @@ class KamstrupServer(object):
     def start(self, host, port):
         connection = (host, port)
         self.server = StreamServer(connection, self.handle)
-        logger.info('Kamstrup protocol server started on: %s', connection)
+        logger.info('Kamstrup protocol server started on: %s', connection,extra = create_extra(_locals = locals()))
         self.server.start()
 
     def stop(self):

@@ -26,7 +26,7 @@ from gevent.server import StreamServer
 import datetime
 import random
 
-import logging as logger
+import logging; from conpot.core.loggers.utils import create_extra as logger
 
 import conpot.core as conpot_core
 
@@ -40,11 +40,11 @@ class GuardianASTServer(object):
         self.databus = conpot_core.get_databus()
         # dom = etree.parse(template)
         self.fill_offset_time = datetime.datetime.utcnow()
-        logger.info('Conpot GuardianAST initialized')
+        logger.info('Conpot GuardianAST initialized',extra = create_extra(_locals = locals()))
 
     def handle(self, sock, addr):
         session = conpot_core.get_session('guardian_ast', addr[0], addr[1])
-        logger.info('New GuardianAST connection from %s:%d. (%s)', addr[0], addr[1], session.id)
+        logger.info('New GuardianAST connection from %s:%d. (%s)', addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
         session.add_event({'type': 'NEW_CONNECTION'})
         current_time = datetime.datetime.utcnow()
         fill_start = self.fill_offset_time - datetime.timedelta(minutes=313)
@@ -178,18 +178,18 @@ class GuardianASTServer(object):
                 # if first value is not ^A then do nothing
                 # thanks John(achillean) for the help
                 if request[0] != '\x01':
-                    logger.info('Non ^A command attempt %s:%d. (%s)', addr[0], addr[1], session.id)
+                    logger.info('Non ^A command attempt %s:%d. (%s)', addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     break
                 # if request is less than 6, than do nothing
                 if len(request) < 6:
-                    logger.info('Invalid command attempt %s:%d. (%s)', addr[0], addr[1], session.id)
+                    logger.info('Invalid command attempt %s:%d. (%s)', addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     break
 
                 cmds = {"I20100": I20100, "I20200": I20200, "I20300": I20300, "I20400": I20400, "I20500": I20500}
                 cmd = request[1:7]  # strip ^A and \n out
                 response = None
                 if cmd in cmds:
-                    logger.info('%s command attempt %s:%d. (%s)', cmd, addr[0], addr[1], session.id)
+                    logger.info('%s command attempt %s:%d. (%s)', cmd, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     response = cmds[cmd]()
                 elif cmd.startswith("S6020"):
                     # change the tank name
@@ -213,7 +213,7 @@ class GuardianASTServer(object):
                             else:
                                 # else it fits fine (22 chars)
                                 product1 = TEMP1
-                        logger.info('S60201: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id)
+                        logger.info('S60201: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     # Follows format for S60201 for comments
                     elif cmd.startswith("S60202"):
                         TEMP = request.split('S60202')
@@ -227,7 +227,7 @@ class GuardianASTServer(object):
                                 product2 = TEMP1[:20] + "  "
                             else:
                                 product2 = TEMP1
-                        logger.info('S60202: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id)
+                        logger.info('S60202: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     # Follows format for S60201 for comments
                     elif cmd.startswith("S60203"):
                         TEMP = request.split('S60203')
@@ -241,7 +241,7 @@ class GuardianASTServer(object):
                                 product3 = TEMP1[:20] + "  "
                             else:
                                 product3 = TEMP1
-                        logger.info('S60203: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id)
+                        logger.info('S60203: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     # Follows format for S60201 for comments
                     elif cmd.startswith("S60204"):
                         TEMP = request.split('S60204')
@@ -255,7 +255,7 @@ class GuardianASTServer(object):
                                 product4 = TEMP1[:20] + "  "
                             else:
                                 product4 = TEMP1
-                        logger.info('S60204: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id)
+                        logger.info('S60204: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     # Follows format for S60201 for comments
                     elif cmd.startswith("S60200"):
                         TEMP = request.split('S60200')
@@ -278,13 +278,13 @@ class GuardianASTServer(object):
                                 product2 = TEMP1
                                 product3 = TEMP1
                                 product4 = TEMP1
-                        logger.info('S60200: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id)
+                        logger.info('S60200: %s command attempt %s:%d. (%s)', TEMP1, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                     else:
                         response = AST_ERROR
                 else:
                     response = AST_ERROR
                     # log what was entered
-                    logger.info('%s command attempt %s:%d. (%s)', request, addr[0], addr[1], session.id)
+                    logger.info('%s command attempt %s:%d. (%s)', request, addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
                 if response:
                     sock.send(response)
                 session.add_event({"type": "AST {0}".format(cmd), "request": request, "response": response})
@@ -293,13 +293,13 @@ class GuardianASTServer(object):
                 raise
             except KeyboardInterrupt:
                 break
-        logger.info('GuardianAST client disconnected %s:%d. (%s)', addr[0], addr[1], session.id)
+        logger.info('GuardianAST client disconnected %s:%d. (%s)', addr[0], addr[1], session.id,extra = create_extra(_locals = locals()))
         session.add_event({'type': 'CONNECTION_LOST'})
 
     def start(self, host, port):
         connection = (host, port)
         self.server = StreamServer(connection, self.handle)
-        logger.info('GuardianAST server started on: {0}'.format(connection))
+        logger.info('GuardianAST server started on: {0}'.format(connection),extra = create_extra(_locals = locals()))
         self.server.start()
 
     def stop(self):

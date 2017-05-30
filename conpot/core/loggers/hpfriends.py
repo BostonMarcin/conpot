@@ -20,7 +20,7 @@ import socket
 
 import hpfeeds
 import gevent
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 logger = logging.getLogger(__name__)
 

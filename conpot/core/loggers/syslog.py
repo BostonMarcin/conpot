@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from logging.handlers import SysLogHandler
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import socket
 
 from filters import AppFilter

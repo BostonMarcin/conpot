@@ -1,5 +1,5 @@
 import sys
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import random
 from datetime import datetime
 
@@ -38,12 +38,12 @@ class conpot_extension(object):
         request = {'oid': str(req_oid), 'val': str(req_val) }
         response = None
 
-        logger.info('%s request from %s: %s %s', event_type, addr, req_oid, req_val)
+        logger.info('%s request from %s: %s %s', event_type, addr, req_oid, req_val,extra = create_extra(_locals = locals()))
 
         if res_varBinds:
             res_oid = ".".join(map(str, res_varBinds[0][0]))
             res_val = res_varBinds[0][1]
-            logger.info('%s response to %s: %s %s', event_type, addr, res_oid, res_val)
+            logger.info('%s response to %s: %s %s', event_type, addr, res_oid, res_val,extra = create_extra(_locals = locals()))
             response = {'oid': str(res_oid), 'val': str(res_val)}
 
         session.add_event({'type': event_type, 'request': request, 'response': response})

@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from gevent import subprocess
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import os
 import re
 

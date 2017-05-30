@@ -18,7 +18,7 @@
 # Author: Peter Sooky <xsooky00@stud.fit.vubtr.cz>
 # Brno University of Technology, Faculty of Information Technology
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import socket
 from lxml import etree
 
@@ -62,11 +62,11 @@ class BacnetServer(object):
         )
         self.bacnet_app = None
 
-        logger.info('Conpot Bacnet initialized using the %s template.', template)
+        logger.info('Conpot Bacnet initialized using the %s template.', template,extra = create_extra(_locals = locals()))
 
     def handle(self, data, address):
         session = conpot_core.get_session('bacnet', address[0], address[1])
-        logger.info('New Bacnet connection from %s:%d. (%s)', address[0], address[1], session.id)
+        logger.info('New Bacnet connection from %s:%d. (%s)', address[0], address[1], session.id,extra = create_extra(_locals = locals()))
         session.add_event({'type': 'NEW_CONNECTION'})
         # I'm not sure if gevent DatagramServer handles issues where the
         # received data is over the MTU -> fragmentation
@@ -82,7 +82,7 @@ class BacnetServer(object):
                 return
             self.bacnet_app.indication(apdu, address, self.thisDevice)
             self.bacnet_app.response(self.bacnet_app._response, address)
-        logger.info('Bacnet client disconnected %s:%d. (%s)', address[0], address[1], session.id)
+        logger.info('Bacnet client disconnected %s:%d. (%s)', address[0], address[1], session.id,extra = create_extra(_locals = locals()))
 
     def start(self, host, port):
         connection = (host, port)
@@ -100,7 +100,7 @@ class BacnetServer(object):
         # get object_list and properties
         self.bacnet_app.get_objects_and_properties(self.dom)
 
-        logger.info('Bacnet server started on: %s', connection)
+        logger.info('Bacnet server started on: %s', connection,extra = create_extra(_locals = locals()))
         self.server.serve_forever()
 
     def stop(self):

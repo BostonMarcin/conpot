@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import uuid
 
 from datetime import datetime
@@ -28,7 +28,7 @@ class AttackSession(object):
     def __init__(self, protocol, source_ip, source_port, databus, log_queue):
         self.log_queue = log_queue
         self.id = uuid.uuid4()
-        logger.info('New %s session from %s (%s)', protocol, source_ip, self.id)
+        logger.info('New %s session from %s (%s)', protocol, source_ip, self.id,extra = create_extra(_locals = locals()))
         self.protocol = protocol
         self.source_ip = source_ip
         self.source_port = source_port

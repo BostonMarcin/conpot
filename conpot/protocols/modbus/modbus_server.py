@@ -3,7 +3,7 @@
 import struct
 import socket
 import time
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import sys
 
 from lxml import etree
@@ -75,9 +75,9 @@ class ModbusServer(modbus.Server):
                         '(type=%s, start=%s, size=%s)',
                         name, slave_id, request_type, start_addr, size)
 
-            logger.info('Conpot modbus initialized')
+            logger.info('Conpot modbus initialized',extra = create_extra(_locals = locals()))
         except (Exception) as e:
-            logger.info(e)
+            logger.info(e,extra = create_extra(_locals = locals()))
 
     def handle(self, sock, address):
         sock.settimeout(self.timeout)
@@ -94,11 +94,11 @@ class ModbusServer(modbus.Server):
             while True:
                 request = sock.recv(7)
                 if not request:
-                    logger.info('Modbus client disconnected. (%s)', session.id)
+                    logger.info('Modbus client disconnected. (%s)', session.id,extra = create_extra(_locals = locals()))
                     session.add_event({'type': 'CONNECTION_LOST'})
                     break
                 if request.strip().lower() == 'quit.':
-                    logger.info('Modbus client quit. (%s)', session.id)
+                    logger.info('Modbus client quit. (%s)', session.id,extra = create_extra(_locals = locals()))
                     session.add_event({'type': 'CONNECTION_QUIT'})
                     break
                 tr_id, pr_id, length = struct.unpack(">HHH", request[:6])
@@ -120,7 +120,7 @@ class ModbusServer(modbus.Server):
 
                 if response:
                     sock.sendall(response)
-                    logger.info('Modbus response sent to %s', address[0])
+                    logger.info('Modbus response sent to %s', address[0],extra = create_extra(_locals = locals()))
                 else:
                     # MB serial connection addressing UID=0
                     if (self.mode == 'serial' and logdata['slave_id'] == 0):
@@ -150,6 +150,6 @@ class ModbusServer(modbus.Server):
     def start(self, host, port):
         connection = (host, port)
         server = StreamServer(connection, self.handle)
-        logger.info('Modbus server started on: %s', connection)
+        logger.info('Modbus server started on: %s', connection,extra = create_extra(_locals = locals()))
         server.start()
 

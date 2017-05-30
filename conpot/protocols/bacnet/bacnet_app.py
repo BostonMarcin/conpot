@@ -18,7 +18,7 @@
 # Author: Peter Sooky <xsooky00@stud.fit.vubtr.cz>
 # Brno University of Technology, Faculty of Information Technology
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import re
 import sys
 from bacpypes.pdu import GlobalBroadcast
@@ -129,7 +129,7 @@ class BACnetApp(BIPSimpleApplication):
                     (request.deviceInstanceRangeHighLimit is not None):
                 if (request.deviceInstanceRangeLowLimit > self.objectIdentifier.keys()[0][1]
                         > request.deviceInstanceRangeHighLimit):
-                    logger.info('Bacnet WhoHasRequest out of range')
+                    logger.info('Bacnet WhoHasRequest out of range',extra = create_extra(_locals = locals()))
                 else:
                     execute = True
             else:
@@ -153,7 +153,7 @@ class BACnetApp(BIPSimpleApplication):
                     (request.deviceInstanceRangeHighLimit is not None):
                 if (request.deviceInstanceRangeLowLimit > self.objectIdentifier.keys()[0][1]
                         > request.deviceInstanceRangeHighLimit):
-                    logger.info('Bacnet WhoHasRequest out of range')
+                    logger.info('Bacnet WhoHasRequest out of range',extra = create_extra(_locals = locals()))
                 else:
                     execute = True
             else:
@@ -174,7 +174,7 @@ class BACnetApp(BIPSimpleApplication):
                     self._response.objectName = objName
                     break
             else:
-                logger.info('Bacnet WhoHasRequest: no object found')
+                logger.info('Bacnet WhoHasRequest: no object found',extra = create_extra(_locals = locals()))
 
     def readProperty(self, request, address, invoke_key, device):
         # Read Property
@@ -211,7 +211,7 @@ class BACnetApp(BIPSimpleApplication):
                         # self._response.debug_contents()
                         break
                 else:
-                    logger.info('Bacnet ReadProperty: object has no property %s', request.propertyIdentifier)
+                    logger.info('Bacnet ReadProperty: object has no property %s', request.propertyIdentifier,extra = create_extra(_locals = locals()))
                     self._response = ErrorPDU()
                     self._response.pduDestination = address
                     self._response.apduInvokeID = invoke_key
@@ -224,11 +224,11 @@ class BACnetApp(BIPSimpleApplication):
         request = None
         apdu_type = apdu_types.get(apdu.apduType)
         invoke_key = apdu.apduInvokeID
-        logger.info('Bacnet PDU received from %s:%d. (%s)', address[0], address[1], apdu_type.__name__)
+        logger.info('Bacnet PDU received from %s:%d. (%s)', address[0], address[1], apdu_type.__name__,extra = create_extra(_locals = locals()))
         if apdu_type.pduType == 0x0:
             # Confirmed request handling
             apdu_service = confirmed_request_types.get(apdu.apduService)
-            logger.info('Bacnet indication from %s:%d. (%s)', address[0], address[1], apdu_service.__name__)
+            logger.info('Bacnet indication from %s:%d. (%s)', address[0], address[1], apdu_service.__name__,extra = create_extra(_locals = locals()))
             try:
                 request = apdu_service()
                 request.decode(apdu)
@@ -249,14 +249,14 @@ class BACnetApp(BIPSimpleApplication):
                         self._response = None
                         return
             else:
-                logger.info('Bacnet indication: Invalid confirmed service choice (%s)', apdu_service.__name__)
+                logger.info('Bacnet indication: Invalid confirmed service choice (%s)', apdu_service.__name__,extra = create_extra(_locals = locals()))
                 self._response = None
                 return
 
         # Unconfirmed request handling
         elif apdu_type.pduType == 0x1:
             apdu_service = unconfirmed_request_types.get(apdu.apduService)
-            logger.info('Bacnet indication from %s:%d. (%s)', address[0], address[1], apdu_service.__name__)
+            logger.info('Bacnet indication from %s:%d. (%s)', address[0], address[1], apdu_service.__name__,extra = create_extra(_locals = locals()))
             try:
                 request = apdu_service()
                 request.decode(apdu)
@@ -316,7 +316,7 @@ class BACnetApp(BIPSimpleApplication):
             return
         else:
             # non-BACnet PDU types
-            logger.info('Bacnet Unrecognized service')
+            logger.info('Bacnet Unrecognized service',extra = create_extra(_locals = locals()))
             self._response = None
             return
 

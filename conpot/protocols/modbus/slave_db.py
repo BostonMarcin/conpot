@@ -8,7 +8,7 @@ from modbus_tk.modbus import Databank, DuplicatedKeyError, MissingKeyError, \
 from modbus_tk import defines
 
 from conpot.protocols.modbus.slave import MBSlave
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class SlaveBase(Databank):
                 ">BB", func_code + 0x80, defines.SLAVE_DEVICE_FAILURE)
             response = query.build_response(r)
         except (ModbusInvalidRequestError) as e:
-            logger.info(e)
+            logger.info(e,extra = create_extra(_locals = locals()))
 
         if slave:
             function_code = slave.function_code

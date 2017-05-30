@@ -1,7 +1,7 @@
 # Command Responder (GET/GETNEXT)
 # Based on examples from http://pysnmp.sourceforge.net/
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 from pysnmp.entity import config
 from pysnmp.entity.rfc3413 import context
@@ -28,7 +28,7 @@ class SNMPDispatcher(DatagramServer):
         try:
             self.recvCbFun(self, self.transportDomain, address, msg)
         except Exception as e:
-            logger.info("SNMP Exception: %s", e)
+            logger.info("SNMP Exception: %s", e,extra = create_extra(_locals = locals()))
 
     def registerTransport(self, tDomain, transport):
         DatagramServer.__init__(self, transport, self.handle)

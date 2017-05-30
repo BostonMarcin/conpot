@@ -28,7 +28,7 @@ from conpot.protocols.s7comm.cotp import COTP_ConnectionConfirm
 from conpot.protocols.s7comm.s7 import S7
 import conpot.core as conpot_core
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 from lxml import etree
 
 logger = logging.getLogger(__name__)
@@ -56,14 +56,14 @@ class S7Server(object):
                 ssl_dict[item_id] = databus_key
 
         logger.debug('Conpot debug info: S7 SSL/SZL: {0}'.format(self.ssl_lists))
-        logger.info('Conpot S7Comm initialized')
+        logger.info('Conpot S7Comm initialized',extra = create_extra(_locals = locals()))
 
     def handle(self, sock, address):
         sock.settimeout(self.timeout)
         session = conpot_core.get_session('s7comm', address[0], address[1])
 
         self.start_time = time.time()
-        logger.info('New S7 connection from {0}:{1}. ({2})'.format(address[0], address[1], session.id))
+        logger.info('New S7 connection from {0}:{1}. ({2})'.format(address[0], address[1], session.id),extra = create_extra(_locals = locals()))
         session.add_event({'type': 'NEW_CONNECTION'})
 
         try:
@@ -77,7 +77,7 @@ class S7Server(object):
                 _, _, length = unpack('!BBH', data[:4])
                 # check for length
                 if length <= 4:
-                    logger.info('S7 error: Invalid length')
+                    logger.info('S7 error: Invalid length',extra = create_extra(_locals = locals()))
                     session.add_event({'error': 'S7 error: Invalid length'})
                     break
                 data += sock.recv(length - 4, socket.MSG_WAITALL)
@@ -175,7 +175,7 @@ class S7Server(object):
                             'Received unknown COTP TPDU after handshake: {0}'.format(cotp_base_packet.tpdu_type))
                         session.add_event({'error': 'Received unknown COTP TPDU after handshake: {0}'.format(cotp_base_packet.tpdu_type)})
                 else:
-                    logger.info('Received unknown COTP TPDU before handshake: {0}'.format(cotp_base_packet.tpdu_type))
+                    logger.info('Received unknown COTP TPDU before handshake: {0}'.format(cotp_base_packet.tpdu_type),extra = create_extra(_locals = locals()))
                     session.add_event({'error': 'Received unknown COTP TPDU before handshake: {0}'.format(cotp_base_packet.tpdu_type)})
 
         except socket.timeout:
@@ -185,12 +185,12 @@ class S7Server(object):
             session.add_event({'type': 'CONNECTION_LOST'})
             logger.debug('Connection reset by peer, remote: {0}. ({1})'.format(address[0], session.id))
         except Exception as e:
-            logger.info('Exception caught {0}, remote: {1}. ({2})'.format(e, address[0], session.id))
+            logger.info('Exception caught {0}, remote: {1}. ({2})'.format(e, address[0], session.id),extra = create_extra(_locals = locals()))
 
     def start(self, host, port):
         connection = (host, port)
         self.server = StreamServer(connection, self.handle)
-        logger.info('S7Comm server started on: {0}'.format(connection))
+        logger.info('S7Comm server started on: {0}'.format(connection),extra = create_extra(_locals = locals()))
         self.server.start()
 
     def stop(self):

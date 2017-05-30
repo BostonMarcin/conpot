@@ -15,7 +15,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import os
 
 from conpot.protocols.http.command_responder import CommandResponder
@@ -32,7 +32,7 @@ class HTTPServer(object):
         self.cmd_responder = None
 
     def start(self, host, port):
-        logger.info('HTTP server started on: %s', (host, port))
+        logger.info('HTTP server started on: %s', (host, port),extra = create_extra(_locals = locals()))
         self.cmd_responder = CommandResponder(host, port, self.template, os.path.join(self.template_directory, 'http'))
         self.cmd_responder.httpd.allow_reuse_address = True
         self.server_port = self.cmd_responder.server_port

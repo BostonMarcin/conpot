@@ -13,7 +13,7 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import socket
 
 import gevent
@@ -31,12 +31,12 @@ class KamstrupManagementServer(object):
         self.timeout = timeout
         self.command_responder = CommandResponder()
         self.banner = "\r\nWelcome...\r\nConnected to [{0}]\r\n"
-        logger.info('Kamstrup management protocol server initialized.')
+        logger.info('Kamstrup management protocol server initialized.',extra = create_extra(_locals = locals()))
         self.server = None
 
     def handle(self, sock, address):
         session = conpot_core.get_session('kamstrup_management_protocol', address[0], address[1])
-        logger.info('New Kamstrup connection from %s:%s. (%s)', address[0], address[1], session.id)
+        logger.info('New Kamstrup connection from %s:%s. (%s)', address[0], address[1], session.id,extra = create_extra(_locals = locals()))
         session.add_event({'type': 'NEW_CONNECTION'})
 
         try:
@@ -46,14 +46,14 @@ class KamstrupManagementServer(object):
             while True:
                 request = sock.recv(1024)
                 if not request:
-                    logger.info('Kamstrup client disconnected. (%s)', session.id)
+                    logger.info('Kamstrup client disconnected. (%s)', session.id,extra = create_extra(_locals = locals()))
                     session.add_event({'type': 'CONNECTION_LOST'})
                     break
 
                 logdata = {'request': request}
                 response = self.command_responder.respond(request)
                 logdata['response'] = response
-                logger.info('Kamstrup management traffic from %s: %s (%s)', address[0], logdata, session.id)
+                logger.info('Kamstrup management traffic from %s: %s (%s)', address[0], logdata, session.id,extra = create_extra(_locals = locals()))
                 session.add_event(logdata)
                 gevent.sleep(0.25)  # TODO measure delay and/or RTT
 
@@ -71,7 +71,7 @@ class KamstrupManagementServer(object):
     def start(self, host, port):
         connection = (host, port)
         self.server = StreamServer(connection, self.handle)
-        logger.info('Kamstrup management protocol server started on: %s', connection)
+        logger.info('Kamstrup management protocol server started on: %s', connection,extra = create_extra(_locals = locals()))
         self.server.start()
 
     def stop(self):

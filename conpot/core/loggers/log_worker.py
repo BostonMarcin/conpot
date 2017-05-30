@@ -17,7 +17,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import json
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 import uuid
 import time
 import socket
@@ -110,7 +110,7 @@ class LogWorker(object):
             sec_now = time.mktime(datetime.utcnow().timetuple())
             if (sec_now - (sec_session_start + sec_last_event)) >= session_timeout:
                 # TODO: We need to close sockets in this case
-                logger.info('Session timed out: %s', session.id)
+                logger.info('Session timed out: %s', session.id,extra = create_extra(_locals = locals()))
                 session.set_ended()
                 sessions.remove(session)
 

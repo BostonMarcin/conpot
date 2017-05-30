@@ -21,7 +21,7 @@ from gevent.server import DatagramServer
 import struct
 import os
 
-import logging
+import logging; from conpot.core.loggers.utils import create_extra
 
 import pyghmi.ipmi.private.constants as constants
 import pyghmi.ipmi.private.serversession as serversession
@@ -71,7 +71,7 @@ class IpmiServer(object):
         self.sock.setblocking(1)
         self.sock.bind(('', self.port))
         self.bmc = self._configure_users(dom)
-        logger.info('Conpot IPMI initialized using %s template', template)
+        logger.info('Conpot IPMI initialized using %s template', template,extra = create_extra(_locals = locals()))
 
     def _configure_users(self, dom):
         # XML parsing
@@ -106,7 +106,7 @@ class IpmiServer(object):
         # make sure self.session exists
         if not address[0] in self.sessions.keys() or not hasattr(self, 'session'):
             # new session for new source
-            logger.info('New IPMI traffic from %s', address)
+            logger.info('New IPMI traffic from %s', address,extra = create_extra(_locals = locals()))
             self.session = FakeSession(address[0], "", "", address[1])
             self.session.server = self
 
@@ -118,7 +118,7 @@ class IpmiServer(object):
             self.initiate_session(data, address, self.session)
         else:
             # session already exists
-            logger.info('Incoming IPMI traffic from %s', address)
+            logger.info('Incoming IPMI traffic from %s', address,extra = create_extra(_locals = locals()))
             if self.session.stage == 0:
                 self.close_server_session()
             else:
@@ -176,11 +176,11 @@ class IpmiServer(object):
         bodydata = struct.unpack('B' * len(header[17:]), header[17:])
         header += chr(self._checksum(*bodydata))
         self.session.stage += 1
-        logger.info('Connection established with %s', sockaddr)
+        logger.info('Connection established with %s', sockaddr,extra = create_extra(_locals = locals()))
         self.session.send_data(header, sockaddr)
 
     def close_server_session(self):
-        logger.info('IPMI Session closed %s', self.session.sockaddr[0])
+        logger.info('IPMI Session closed %s', self.session.sockaddr[0],extra = create_extra(_locals = locals()))
         # cleanup session
         del self.sessions[self.session.sockaddr[0]]
         del self.session
@@ -240,7 +240,7 @@ class IpmiServer(object):
                         1, 0, 0, 8, 1, 0, 0, 0,  # integrity
                         2, 0, 0, 8, 1, 0, 0, 0,  # privacy
         ])
-        logger.info('IPMI open session request')
+        logger.info('IPMI open session request',extra = create_extra(_locals = locals()))
         self.session.send_payload(response, constants.payload_types['rmcpplusopenresponse'], retry=False)
 
     def _got_rakp1(self, data):
@@ -271,7 +271,7 @@ class IpmiServer(object):
         authcode = hmac.new(self.kuid, hmacdata, hashlib.sha1).digest()
         authcode = list(struct.unpack('%dB' % len(authcode), authcode))
         newmessage = ([clienttag, 0, 0, 0] + self.clientsessionid + self.Rc + uuidbytes + authcode)
-        logger.info('IPMI rakp1 request')
+        logger.info('IPMI rakp1 request',extra = create_extra(_locals = locals()))
         self.session.send_payload(newmessage, constants.payload_types['rakp2'], retry=False)
 
     def _got_rakp3(self, data):
@@ -295,7 +295,7 @@ class IpmiServer(object):
             return
         self.session.localsid = struct.unpack('<I', struct.pack('4B', *self.managedsessionid))[0]
 
-        logger.info('IPMI rakp3 request')
+        logger.info('IPMI rakp3 request',extra = create_extra(_locals = locals()))
         self.session.ipmicallback = self.handle_client_request
         self._send_rakp4(clienttag, 0)
 
@@ -305,7 +305,7 @@ class IpmiServer(object):
         hmacdata = struct.pack('%dB' % len(hmacdata), *hmacdata)
         authdata = hmac.new(self.sik, hmacdata, hashlib.sha1).digest()[:12]
         payload += struct.unpack('%dB' % len(authdata), authdata)
-        logger.info('IPMI rakp4 sent')
+        logger.info('IPMI rakp4 sent',extra = create_extra(_locals = locals()))
         self.session.send_payload(payload, constants.payload_types['rakp4'], retry=False)
         self.session.confalgo = 'aes'
         self.session.integrityalgo = 'sha1'
@@ -322,11 +322,11 @@ class IpmiServer(object):
                 else:
                     self.clientpriv = request['data'][0]
             self.session._send_ipmi_net_payload(code=returncode, data=[self.clientpriv])
-            logger.info('IPMI response sent (Set Session Privilege) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Set Session Privilege) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
         elif request['netfn'] == 6 and request['command'] == 0x3c:
             # close session
             self.session.send_ipmi_response()
-            logger.info('IPMI response sent (Close Session) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Close Session) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
             self.close_server_session()
         elif request['netfn'] == 6 and request['command'] == 0x44:
             # get user access
@@ -350,7 +350,7 @@ class IpmiServer(object):
             data.append(sum(self.fixedusers))
             data.append(self.channelaccess)
             self.session._send_ipmi_net_payload(code=returncode, data=data)
-            logger.info('IPMI response sent (Get User Access) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Get User Access) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
         elif request['netfn'] == 6 and request['command'] == 0x46:
             # get user name
             userid = request['data'][0]
@@ -361,7 +361,7 @@ class IpmiServer(object):
                 # filler
                 data.append(0)
             self.session._send_ipmi_net_payload(code=returncode, data=data)
-            logger.info('IPMI response sent (Get User Name) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Get User Name) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
         elif request['netfn'] == 6 and request['command'] == 0x45:
             # set user name
             # TODO: fix issue where users can be overwritten
@@ -390,7 +390,7 @@ class IpmiServer(object):
 
             returncode = 0
             self.session._send_ipmi_net_payload(code=returncode)
-            logger.info('IPMI response sent (Set User Name) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Set User Name) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
         elif request['netfn'] == 6 and request['command'] == 0x47:
             # set user passwd
             passwd_length = request['data'][0] & 0b10000000
@@ -426,19 +426,19 @@ class IpmiServer(object):
                     returncode = 0x80
 
             self.session._send_ipmi_net_payload(code=returncode)
-            logger.info('IPMI response sent (Set User Password) to %s', self.session.sockaddr)
+            logger.info('IPMI response sent (Set User Password) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
         elif request['netfn'] in [0, 6] and request['command'] in [1, 2, 8, 9]:
             self.bmc.handle_raw_request(request, self.session)
         else:
             returncode = 0xc1
             self.session._send_ipmi_net_payload(code=returncode)
-            logger.info('IPMI unrecognized command from %s', self.session.sockaddr)
-            logger.info('IPMI response sent (Invalid Command) to %s', self.session.sockaddr)
+            logger.info('IPMI unrecognized command from %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
+            logger.info('IPMI response sent (Invalid Command) to %s', self.session.sockaddr,extra = create_extra(_locals = locals()))
 
     def start(self, host, port):
         connection = (host, port)
         self.server = DatagramServer(connection, self.handle)
-        logger.info('IPMI server started on: %s', connection)
+        logger.info('IPMI server started on: %s', connection,extra = create_extra(_locals = locals()))
         self.server.serve_forever()
 
     def stop(self):
