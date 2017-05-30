@@ -9,6 +9,13 @@ VARS = {'client_ip':('addr',
 
 
 def create_extra(_locals, *args, **kwargs):
+    """
+    Use locals variables to get specific values. Use VARS for mapping.
+    :param _locals: locals() output
+    :param args: for further features
+    :param kwargs: for further features
+    :return:
+    """
 
     _extra = {}
     _extra['source'] =  VARS['source']
