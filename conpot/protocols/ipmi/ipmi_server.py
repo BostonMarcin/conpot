@@ -180,7 +180,7 @@ class IpmiServer(object):
         self.session.send_data(header, sockaddr)
 
     def close_server_session(self):
-        logger.info('IPMI Session closed %s', self.session.sockaddr[0],extra = create_extra(_locals = locals()))
+        logger.info('IPMI Session closed %s', self.session.sockaddr[0],extra = create_extra(_locals = locals()), client_ip = self.session.sockaddr)
         # cleanup session
         del self.sessions[self.session.sockaddr[0]]
         del self.session
