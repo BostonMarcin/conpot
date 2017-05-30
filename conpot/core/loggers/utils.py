@@ -1,11 +1,11 @@
 import socket, logging
 
 VARS = {'client_ip':('addr',
-                    'sockaddr',
                      'address',
                          ),
             'source':socket.gethostname(),
             }
+
 
 
 def create_extra(_locals, *args, **kwargs):
@@ -13,15 +13,18 @@ def create_extra(_locals, *args, **kwargs):
     _extra = {}
     _extra['source'] =  VARS['source']
 
-    #build extra for client's address
-    _extra['client_ip'] = "Undefined"
-    for _ in VARS['client_ip']:
-        if _ in _locals:
-            _extra['client_ip'] =_locals[_]
-            break
+    # build extra for client's address
+    if 'client_ip' not in kwargs:
+        _extra['client_ip'] = "Undefined"
+        for _ in VARS['client_ip']:
+
+            if _ in _locals:
+                _extra['client_ip'] =_locals[_]
+                break
+    else:
+        _extra['client_ip'] = kwargs['client_ip']
 
     return _extra
-
 
 
 

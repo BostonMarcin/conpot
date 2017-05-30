@@ -61,7 +61,7 @@ class FakeSession(Session):
         self.server = None
         self.sol_handler = None
         self.ipmicallback = self._generic_callback
-        logger.info('New IPMI session initialized for client (%s)', self.sockaddr,extra = create_extra(_locals = locals()))
+        logger.info('New IPMI session initialized for client (%s)', self.sockaddr,extra = create_extra(_locals = locals(), client_ip = self.sockaddr ))
 
     def _generic_callback(self, response):
         self.lastresponse = response
