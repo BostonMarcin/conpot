@@ -52,6 +52,9 @@ from conpot.emulators.proxy import Proxy
 from conpot.utils import ext_ip
 from conpot.utils import mac_addr
 
+
+from conpot.core.loggers.utils import VARS
+
 logger = logging.getLogger()
 package_directory = os.path.dirname(os.path.abspath(conpot.__file__))
 
@@ -80,7 +83,8 @@ def setup_logging(log_file, verbose):
     else:
         log_level = logging.INFO
 
-    log_format = logging.Formatter('%(asctime)-15s %(message)s')
+    format_VAR = " ".join("%({s})".format(s = v) for v in VARS.keys())
+    log_format = logging.Formatter('%(asctime)-15s' + format_VAR + '%(message)s')
     console_log = logging.StreamHandler()
     console_log.setLevel(log_level)
     console_log.setFormatter(log_format)

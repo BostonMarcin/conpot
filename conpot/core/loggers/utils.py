@@ -1,15 +1,13 @@
-
 import socket
 
-def extra(_locals, *args, **kwargs):
-
-    _extra_str = []
-
-    VARS = {'client_ip':('addr',
+VARS = {'client_ip':('addr',
                          'sockaddr',
                          ),
             'hostname':socket.gethostname(),
             }
+
+
+def extra(_locals, *args, **kwargs):
 
     _extra_str.append('hostname : {n}'.format(n = VARS['hostname']))
 
