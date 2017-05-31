@@ -27,7 +27,7 @@ class SysLogger(object):
 
         logger = logging.getLogger()
         format_VAR = " ".join("{n} %({n})s".format(n=v) for v in VARS.keys())
-        log_format = logging.Formatter('%(asctime)-15s ' + format_VAR + ' message %(message)s')
+        log_format = logging.Formatter('%(asctime)-15s ' + format_VAR + ' shortmessage %(message)s')
         # app_filter = AppFilter()
         # log_format = AppFilter().logformat()
         # formatter = logging.Formatter(log_format)

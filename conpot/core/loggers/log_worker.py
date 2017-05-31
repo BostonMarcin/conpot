@@ -33,6 +33,7 @@ from conpot.core.loggers.hpfriends import HPFriendsLogger
 from conpot.core.loggers.syslog import SysLogger
 from conpot.core.loggers.taxii_log import TaxiiLogger
 from conpot.core.loggers.json_log import JsonLogger
+from conpot.core.loggers.gelf_log import GelfLogger
 from helpers import json_default
 logger = logging.getLogger(__name__)
 
@@ -88,6 +89,13 @@ class LogWorker(object):
             logdevice = config.get('syslog', 'device')
             logsocket = config.get('syslog', 'socket')
             self.syslog_client = SysLogger(host, port, facility, logdevice, logsocket)
+
+        if config.getboolean('gelf', 'enabled'):
+            host = config.get('gelf', 'host')
+            port = config.getint('gelf', 'port')
+            debug = config.getboolean('gelf', 'debug')
+
+            self.syslog_client = GelfLogger(host, port,debug)
 
         if config.getboolean('taxii', 'enabled'):
             # TODO: support for certificates
