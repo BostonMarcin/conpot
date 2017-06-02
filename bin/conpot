@@ -107,7 +107,7 @@ def drop_privileges(uid_name=None, gid_name=None):
         uid_name = 'nobody'
 
     try:
-        wanted_user = pwd.getpwnam(uid_name)
+        wanted_user = pwd.getpwnam(uid_name) #Return the password database entry for the given user name
     except KeyError:
         logger.exception(
             'Cannot drop privileges: user "%s" does not exist.',
@@ -115,10 +115,10 @@ def drop_privileges(uid_name=None, gid_name=None):
         sys.exit(1)
 
     if gid_name is None:
-        gid_name = grp.getgrgid(wanted_user.pw_gid).gr_name
+        gid_name = grp.getgrgid(wanted_user.pw_gid).gr_name #Return the group database entry for the given numeric group ID. KeyError is raised if the entry asked for cannot be found. and next get group name
 
     try:
-        wanted_group = grp.getgrnam(gid_name)
+        wanted_group = grp.getgrnam(gid_name) #Return the group database entry for the given group name. KeyError is raised if the entry asked for cannot be found.
     except KeyError:
         logger.exception(
             'Cannot drop privileges: group "%s" does not exist.',
@@ -128,11 +128,11 @@ def drop_privileges(uid_name=None, gid_name=None):
     logger.debug('Attempting to drop privileges to "%s:%s"',
                  wanted_user.pw_name, wanted_group.gr_name)
 
-    os.setgid(wanted_group.gr_gid)
-    os.setuid(wanted_user.pw_uid)
+    os.setgid(wanted_group.gr_gid) #the numerical group id
+    os.setuid(wanted_user.pw_uid) #numerical user id
 
-    new_user = pwd.getpwuid(os.getuid())
-    new_group = grp.getgrgid(os.getgid())
+    new_user = pwd.getpwuid(os.getuid()) #get new user
+    new_group = grp.getgrgid(os.getgid()) # get new group
 
     logging.info('Privileges dropped, running as "%s:%s"',
                 new_user.pw_name, new_group.gr_name,extra = create_extra(_locals = locals()))
